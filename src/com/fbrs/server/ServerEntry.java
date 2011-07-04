@@ -13,7 +13,7 @@ public class ServerEntry {
 	static ServerSocket serverSocket;
 	public static boolean listening = true;
 	public static final int port = 8888;
-	public static final int version = 007;
+	public static final int version = 8;
 	
 	public static boolean verbose = false;
 
