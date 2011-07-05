@@ -13,8 +13,8 @@ public class ServerEntry {
 	static ServerSocket serverSocket;
 	public static boolean listening = true;
 	public static final int port = 8888;
-	public static final int version = 8;
-	
+	public static final int version = 9;
+
 	public static boolean verbose = false;
 
 	/**
@@ -22,45 +22,45 @@ public class ServerEntry {
 	 * @throws IOException 
 	 */
 	public static void main(String[] args) throws IOException {
-		
-		if(args[0].equals("-v") || args[0].equals("-verbose"))
-			verbose = true;
-		if(args[0].equals("-vs") || args[0].equals("-version"))	
-		{
-			System.out.println(version);
-			System.exit(0);
+		if(args.length > 0){
+			if(args[0].equals("-v") || args[0].equals("-verbose"))
+				verbose = true;
+			if(args[0].equals("-vs") || args[0].equals("-version"))	
+			{
+				System.out.println(version);
+				System.exit(0);
+			}
+			if(args[0].equals("-debug"))	
+			{
+				System.out.println("can connect to s3: " + AdminConsole.s3client.doesBucketExist("NovlDataStore"));
+				System.exit(0);
+			}
+
 		}
-		if(args[0].equals("-debug"))	
-		{
-			System.out.println("can connect to s3: " + AdminConsole.s3client.doesBucketExist("NovlDataStore"));
-			System.exit(0);
-		}
-			
-		
 		Commands.Populate();
 		try {
-		    serverSocket = new ServerSocket(port);
-		    
-		    System.out.println("Starting Server on port " + port);
+			serverSocket = new ServerSocket(port);
+
+			System.out.println("Starting Server on port " + port);
 		} catch (IOException e) {
-		    System.out.println("Could not listen on port " + port);
-		    System.exit(-1);
+			System.out.println("Could not listen on port " + port);
+			System.exit(-1);
 		}
 		(new Thread(new MatchThread())).start();
-		
+
 		ExecutorService pool = Executors.newFixedThreadPool(10);
-		
-		
-		
+
+
+
 		while(listening)
 		{
 			//(new Thread(new ClientThread(serverSocket.accept()))).start();
 			pool.execute(new ClientThread(serverSocket.accept()));
 			System.out.println("Connect");
 		}
-		
+
 		serverSocket.close();
 	}
-	
+
 
 }

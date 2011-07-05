@@ -3,6 +3,7 @@ package com.fbrs.server;
 import java.util.HashMap;
 
 import com.fbrs.server.novl.staticweb.Friends;
+import com.fbrs.server.novl.staticweb.Help;
 import com.fbrs.server.novl.staticweb.UserData;
 import com.fbrs.server.utils.ICommand;
 import com.fbrs.server.utils.UnitTests;
@@ -15,7 +16,7 @@ public class Commands {
 		Command.put("Friends", new Friends());
 		Command.put("Users", new UserData());
 		Command.put("runtest", new UnitTests());
-	
+		Command.put("help", new Help());
 	}
 
 }

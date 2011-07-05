@@ -33,9 +33,11 @@ public class ClientThread implements Runnable{
 			ICommand command = Commands.Command.get(tokens[1]);
 			if(command != null)
 				prnt = command.go(request);
+			else
+				prnt = "Bad Value";
 				out.println(prnt);
 				if(ServerEntry.verbose) System.out.println(prnt);
-
+			
 
 
 			System.out.println(request);
