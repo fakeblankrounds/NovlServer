@@ -5,6 +5,7 @@ import java.net.ServerSocket;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import com.fbrs.server.novl.staticweb.Help;
 import com.fbrs.server.rebound.MatchThread;
 import com.fbrs.server.utils.AdminConsole;
 
@@ -13,7 +14,7 @@ public class ServerEntry {
 	static ServerSocket serverSocket;
 	public static boolean listening = true;
 	public static final int port = 8888;
-	public static final int version = 9;
+	public static final int version = 10;
 
 	public static boolean verbose = false;
 
@@ -38,6 +39,8 @@ public class ServerEntry {
 
 		}
 		Commands.Populate();
+		Help.PackHelp();
+		
 		try {
 			serverSocket = new ServerSocket(port);
 

@@ -11,12 +11,26 @@ import com.fbrs.server.utils.UnitTests;
 public class Commands {
 	
 	public static HashMap<String, ICommand> Command = new HashMap<String, ICommand>();
+	
+	private static String rootcalls = "";
+	
 	public static void Populate()
 	{
-		Command.put("Friends", new Friends());
-		Command.put("Users", new UserData());
-		Command.put("runtest", new UnitTests());
-		Command.put("help", new Help());
+		Commands.addCommand("Friends", new Friends());
+		Commands.addCommand("Users", new UserData());
+		Commands.addCommand("runtest", new UnitTests());
+		Commands.addCommand("help", new Help());
+	}
+	
+	public static String getRoot()
+	{
+		return rootcalls;
+	}
+	
+	private static void addCommand(String c, ICommand i)
+	{
+		Command.put(c,i);
+		rootcalls += c + ",";
 	}
 
 }
