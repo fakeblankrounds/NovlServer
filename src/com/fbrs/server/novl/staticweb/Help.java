@@ -45,21 +45,6 @@ public class Help implements ICommand{
 		HelpPage = head + T1+ T2 + tail;
 		
 	}
-	//private static String divs = "<div style=\"border-style:dotted; border-width:2px; background-color:lightblue; margin-left:%px;\">";
-	//private static String enddiv = "</div>";
-	/*
-	private static String cmdRecurse(String s, int margin, ICommand cmd)
-	{
-		String r_value = "";
-		String [] g = s.split(",");
-		if(g[0].equals("#")) return divs.replace("%", Integer.toString(margin)) + s.substring(2) + enddiv;
-		for(String sub : g)
-		{
-			r_value += divs.replace("%", Integer.toString(margin)) + Help.cmdRecurse(cmd.getCommands(sub), margin+15, ) + enddiv;
-		}
-		return r_value;
-			
-	}*/
 
 	@Override
 	public String getCommands(String s) {

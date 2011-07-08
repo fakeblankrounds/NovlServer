@@ -14,27 +14,33 @@ public class ServerEntry {
 	static ServerSocket serverSocket;
 	public static boolean listening = true;
 	public static final int port = 8888;
-	public static final int version = 10;
+	public static final float version = 10.1f;
 
 	public static boolean verbose = false;
-
+	public static boolean unittest = true;
 	/**
 	 * @param args
 	 * @throws IOException 
 	 */
 	public static void main(String[] args) throws IOException {
 		if(args.length > 0){
-			if(args[0].equals("-v") || args[0].equals("-verbose"))
-				verbose = true;
-			if(args[0].equals("-vs") || args[0].equals("-version"))	
-			{
-				System.out.println(version);
-				System.exit(0);
-			}
-			if(args[0].equals("-debug"))	
-			{
-				System.out.println("can connect to s3: " + AdminConsole.s3client.doesBucketExist("NovlDataStore"));
-				System.exit(0);
+			for(int i = 0; i < args.length; i++){
+				if(args[i].equals("-v") || args[i].equals("-verbose"))
+					verbose = true;
+				if(args[i].equals("-vs") || args[i].equals("-version"))	
+				{
+					System.out.println(version);
+					System.exit(0);
+				}
+				if(args[i].equals("-debug"))	
+				{
+					System.out.println("can connect to s3: " + AdminConsole.s3client.doesBucketExist("NovlDataStore"));
+					System.exit(0);
+				}
+				if(args[i].equals("-u") || args[i].equals("-enableUnitTests"))
+				{
+					unittest = true;
+				}
 			}
 
 		}

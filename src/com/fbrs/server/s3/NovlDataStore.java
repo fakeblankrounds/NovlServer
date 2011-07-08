@@ -14,6 +14,7 @@ import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.simpledb.AmazonSimpleDBClient;
 import com.amazonaws.services.simpledb.model.Attribute;
+import com.amazonaws.services.simpledb.model.DeleteAttributesRequest;
 import com.amazonaws.services.simpledb.model.GetAttributesRequest;
 import com.amazonaws.services.simpledb.model.GetAttributesResult;
 import com.amazonaws.services.simpledb.model.PutAttributesRequest;
@@ -98,11 +99,6 @@ public class NovlDataStore {
 
 	public static String CreateNewUser(String UserName, String password) {
 		try {
-
-		//	GetAttributesRequest request = new GetAttributesRequest(Users,
-		//			UserName);
-
-		//	GetAttributesResult r = dbclient.getAttributes(request);
 			if(UserName.contains("/"))
 				return "Username cannot contain '/'";
 			if (!doesUserExist(UserName)) {
@@ -121,6 +117,28 @@ public class NovlDataStore {
 			return "Username Already exists";
 		} catch (Exception e) {
 			return "Error Occured. We are working on it";
+		}
+	}
+	
+	public static String DeleteUser(String UserName, String password)
+	{
+		try {
+
+			if (!checkPassword(UserName, password))
+				return "Bad Username or password";
+
+			DeleteAttributesRequest del = new DeleteAttributesRequest(Users, UserName);
+			DeleteAttributesRequest del2 = new DeleteAttributesRequest(Friends, UserName);
+			DeleteAttributesRequest del3 = new DeleteAttributesRequest(Messages, UserName);
+			dbclient.deleteAttributes(del);
+			dbclient.deleteAttributes(del2);
+			dbclient.deleteAttributes(del3);
+			//s3client.deleteObject("NovlDataStore_msg", UserName);
+			
+			return "300";
+
+		} catch (Exception e) {
+			return "Something went wrong we are working on it"; // ok code
 		}
 	}
 

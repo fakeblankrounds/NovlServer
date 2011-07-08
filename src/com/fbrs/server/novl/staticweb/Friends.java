@@ -54,7 +54,15 @@ public class Friends implements ICommand{
 		}
 		s[0] = StringEscapeUtils.escapeHtml(s[0]);
 		try{
-			String[] request = s[0].split("/");
+			String[] request = new String[6];
+			String[] temp = s[0].split("/");
+			int iter;
+			if(request.length < temp.length)
+				iter = request.length;
+			else
+				iter = temp.length;
+			for(int i = 0; i < iter; i++)
+				request[i] = temp[i];
 			try{
 				return commands.get(request[2]).go(request[3], request[4], request[5]);
 			}

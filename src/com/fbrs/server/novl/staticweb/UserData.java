@@ -6,6 +6,7 @@ import java.util.HashMap;
 
 import org.apache.commons.lang.StringEscapeUtils;
 
+import com.fbrs.server.ServerEntry;
 import com.fbrs.server.s3.NovlDataStore;
 import com.fbrs.server.utils.ICommand;
 
@@ -70,6 +71,20 @@ public class UserData implements ICommand{
 			}
 
 		});
+		
+		commands.put("deleteUser", new ICommand(){
+
+			@Override
+			public String go(String... request) {
+				return  Delete(request[0], request[1]);
+			}
+
+			@Override
+			public String getCommands(String s) {
+				return "#, Username, Password";
+			}
+
+		});
 	}
 	
 
@@ -82,25 +97,46 @@ public class UserData implements ICommand{
 		}
 		s[0] = StringEscapeUtils.escapeHtml(s[0]);
 		try{
-			String[] request = s[0].split("/");
+			String[] request = new String[8];
+			String[] temp = s[0].split("/");
+			int iter;
+			if(request.length < temp.length)
+				iter = request.length;
+			else
+				iter = temp.length;
+			for(int i = 0; i < iter; i++)
+				request[i] = temp[i];
 			
 				try{
 					return commands.get(request[2]).go(request[3], request[4], request[5], request[6], request[7]);
 				}
 				catch(Exception e)
 				{
-					return "Bad Request Contact Fake Blank Rounds Support at support@fakeblankrounds.com";
+					if(ServerEntry.verbose){
+						e.printStackTrace();
+						return "Bad Request Contact Fake Blank Rounds Support at support@fakeblankrounds.com \n";
+					}
+					else return "Bad Request Contact Fake Blank Rounds Support at support@fakeblankrounds.com \n";
 				}
 		}
 		catch (Exception e)
 		{
-			return "Bad Request Contact Fake Blank Rounds Support at support@fakeblankrounds.com";
+			if(ServerEntry.verbose){
+				e.printStackTrace();
+				return "Bad Request Contact Fake Blank Rounds Support at support@fakeblankrounds.com \n";
+			}
+			else return "Bad Request Contact Fake Blank Rounds Support at support@fakeblankrounds.com \n";
 		}
 	}
 
 	public String Create(String username, String pass)
 	{
 		return NovlDataStore.CreateNewUser(username, pass);
+	}
+	
+	public String Delete(String Username, String pass)
+	{
+		return NovlDataStore.DeleteUser(Username, pass);
 	}
 
 	public String Message(String username, String pass, String to, String head, String msg)
@@ -117,12 +153,13 @@ public class UserData implements ICommand{
 	{
 		return NovlDataStore.getSingleMessage(username, pass, msgname);
 	}
+	
 
 	@Override
 	public String getCommands(String s) {
 
 		if(s.equals("root"))
-			return "message,getmessages,getsingle,newUser";
+			return "message,getmessages,getsingle,newUser,deleteUser";
 		else
 			return commands.get(s).getCommands("");
 	}

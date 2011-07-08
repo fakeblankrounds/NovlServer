@@ -18,7 +18,7 @@ public class Commands {
 	{
 		Commands.addCommand("Friends", new Friends());
 		Commands.addCommand("Users", new UserData());
-		Commands.addCommand("runtest", new UnitTests());
+		Commands.addCommand("Test", new UnitTests());
 		Commands.addCommand("help", new Help());
 	}
 	
