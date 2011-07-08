@@ -17,7 +17,7 @@ public class ServerEntry {
 	public static final float version = 10.1f;
 
 	public static boolean verbose = false;
-	public static boolean unittest = true;
+	public static boolean unittest = false;
 	/**
 	 * @param args
 	 * @throws IOException 
