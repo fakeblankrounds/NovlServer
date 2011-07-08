@@ -118,10 +118,14 @@ public class UnitTests implements ICommand{
 
 	@Override
 	public String getCommands(String s) {
-		if(s.equals("root"))
-			return "All,Friends,Users,End";
+		if(ServerEntry.unittest){
+			if(s.equals("root"))
+				return "All,Friends,Users,End";
+			else
+				return commands.get(s).getCommands("");
+		}
 		else
-			return commands.get(s).getCommands("");
+			return "";
 	}
 
 	public String TestAll()
@@ -136,7 +140,7 @@ public class UnitTests implements ICommand{
 		r_value += "Testing Done! </body> </html>";
 		return r_value;
 	}
-	
+
 	private static String passed = "<div style=\"border-style:dotted; border-width:2px; background-color:green;\">Passed</div> \n";
 	private static String test_stat = "<div style=\"border-style:dotted; border-width:2px; background-color:lightblue;\">";
 	private static String _test_stat = "</div> \n";
@@ -155,13 +159,13 @@ public class UnitTests implements ICommand{
 			r_value+=passed;
 		else
 			r_value+=failed;
-		
+
 		r_value += test_stat + "FriendTest 3: Checking Double "+ user1 +" to "+ user2 + "\'s friendList \n" + _test_stat;
 		if(c.go("//add/" + user2 + "/" + u2pass + "/" + user1 + "/").equals("300"))
 			r_value+=passed;
 		else
 			r_value+=failed;
-		
+
 		r_value += c.go("//get/" + user1 + "/" + u1pass + "/") + "<br>";
 		r_value += c.go("//get/" + user2 + "/" + u2pass + "/") + "<br>";
 
@@ -183,19 +187,19 @@ public class UnitTests implements ICommand{
 			r_value+=passed;
 		else
 			r_value+=failed;
-		
+
 		r_value += test_stat +  "UserTest 3: Messageing "+ user1 + " from " +user2 +"\n" + _test_stat;
 		if((e = c.go("//message/" + user2 + "/" + u2pass + "/" + user1 +"/" + msgHeader1 + "/" + msgSubject1 + "/")).equals("300"))
 			r_value+=passed;
 		else
 			r_value+=failed + e;
-		
+
 		r_value += test_stat +  "UserTest 4: Messageing "+ user2 + " from " +user1 +"\n" + _test_stat;
 		if((e = c.go("//message/" + user1 + "/" + u1pass + "/" + user2 +"/" + msgHeader1 + "/" + msgSubject1 + "/")).equals("300"))
 			r_value+=passed;
 		else
 			r_value+=failed + e;
-		
+
 		r_value += test_stat +  "UserTest 5: Getting messages for "+ user1 +"\n" + _test_stat;
 		r_value += c.go("//getmessages/" + user1 + "/" + u1pass + "/" );
 		r_value += test_stat +  "UserTest 6: Getting messages for "+ user2 +"\n" + _test_stat;
@@ -211,8 +215,8 @@ public class UnitTests implements ICommand{
 		//	r_value+=passed;
 		//else
 		//	r_value+=failed;
-		
-		
+
+
 		return r_value;
 	}
 
