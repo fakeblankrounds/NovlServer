@@ -6,7 +6,7 @@ import java.util.HashMap;
 
 import org.apache.commons.lang.StringEscapeUtils;
 
-import com.fbrs.server.s3.NovlDataStore;
+import com.fbrs.server.db.NovlDataStore;
 import com.fbrs.server.utils.ICommand;
 
 public class Friends implements ICommand{

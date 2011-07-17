@@ -238,4 +238,9 @@ public class UnitTests implements ICommand{
 			r_value+=failed;
 		return r_value;
 	}
+	
+	public String TestGroups()
+	{
+		return "";
+	}
 }

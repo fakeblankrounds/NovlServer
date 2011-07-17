@@ -1,4 +1,4 @@
-package com.fbrs.server.s3;
+package com.fbrs.server.db;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
@@ -31,6 +31,9 @@ public class NovlDataStore {
 	private static final String Users = "Novl_UserStore";
 	private static final String Friends = "Novl_FriendStore";
 	private static final String Messages = "Novl_MsgStore";
+	private static final String Groups = "Novl_GroupStore";
+	private static final String Teams = "Novl_TeamStore";
+	private static final String GroupList = "Novl_ListGroup";
 	// private SecretKey novlkey = new SecretKey("");
 	// private EncryptionMaterials encryption = new
 	// EncryptionMaterials(novlkey);
@@ -56,17 +59,37 @@ public class NovlDataStore {
 		AttrList.add(new ReplaceableAttribute(name, value, false));
 		return AttrList;
 	}
+	
+	private static List<Attribute> addAttr(String name, String value)
+	{
+		List<Attribute> AttrList = new ArrayList<Attribute>();
+		AttrList.add(new Attribute(name, value));
+		return AttrList;
+	}
 
 	private static boolean checkPassword(String UserName, String password) {
 		GetAttributesRequest request = new GetAttributesRequest(Users, UserName)
-				.withAttributeNames("password");
+		.withAttributeNames("password");
 		GetAttributesResult r = dbclient.getAttributes(request);
 		Attribute a = r.getAttributes().get(0);
 		if (a.getName().equals("password") && a.getValue().equals(password))
 			return true;
 		return false;
 	}
-	
+
+	private static boolean checkAdmin(String UserName, String password, String team)
+	{
+		GetAttributesRequest request = new GetAttributesRequest(Teams, team)
+		.withAttributeNames("Admin");
+		GetAttributesResult r = dbclient.getAttributes(request);
+		for(int i = 0; i < r.getAttributes().size(); i++){
+			Attribute a = r.getAttributes().get(i);
+			if (a.getName().equals("Admin") && a.getValue().equals(UserName))
+				return true;
+		}
+		return false;
+	}
+
 	private static boolean doesUserExist(String UserName)
 	{
 		GetAttributesRequest request = new GetAttributesRequest(Users, UserName);
@@ -90,7 +113,7 @@ public class NovlDataStore {
 			return "";
 		}
 	}
-	
+
 	@SuppressWarnings("unused")
 	private static String setStatus(String UserName, String password)
 	{
@@ -119,7 +142,7 @@ public class NovlDataStore {
 			return "Error Occured. We are working on it";
 		}
 	}
-	
+
 	public static String DeleteUser(String UserName, String password)
 	{
 		try {
@@ -134,7 +157,7 @@ public class NovlDataStore {
 			dbclient.deleteAttributes(del2);
 			dbclient.deleteAttributes(del3);
 			//s3client.deleteObject("NovlDataStore_msg", UserName);
-			
+
 			return "300";
 
 		} catch (Exception e) {
@@ -171,11 +194,11 @@ public class NovlDataStore {
 			PutAttributesRequest p = new PutAttributesRequest(Messages,
 					To, addItem("Message", key));
 			dbclient.putAttributes(p);
-			
+
 			ByteArrayInputStream bs = new ByteArrayInputStream(message.getBytes());
 			s3client.putObject("NovlDataStore_msg", key, bs, null);
-			
-			
+
+
 			return "300";
 			// String m = "From: " + UserName + "/" + messageheader + "/" +
 			// message + "/Sent: " + new Date().toString() + '\n';
@@ -226,14 +249,14 @@ public class NovlDataStore {
 			return "Something went wrong, we are working on it";
 		}
 	}
-	
+
 	public static String getSingleMessage(String UserName, String password, String messageName)
 	{
 		try {
 			if (!checkPassword(UserName, password))
 				return "Bad Username or password";
 
-			
+
 			S3Object msg = s3client.getObject("NovlDataStore_msg", messageName);
 			BufferedReader read = new BufferedReader(new InputStreamReader(msg.getObjectContent()));
 			String s = "";
@@ -250,10 +273,151 @@ public class NovlDataStore {
 		} catch (Exception e) {
 			return "Something went wrong we are working on it"; // ok code
 		}
-		
+
 	}
 
 	public static String getUserGameStats(String UserName) {
 		return "";
+	}
+
+	public static String CreateNewGroup(String UserName, String password, String GroupName, boolean isPrivate)
+	{
+		try {
+			if (!checkPassword(UserName, password))
+				return "Bad Username or password";
+			if(GroupName.contains("/"))
+				return "The name cannot contain '/'";
+			
+			String db_box;
+			if(isPrivate)
+				db_box = Teams;
+			else
+				db_box = Groups;
+			PutAttributesRequest p = new PutAttributesRequest(db_box,
+					GroupName, addItem("Admin", UserName));
+			PutAttributesRequest p2 = new PutAttributesRequest(GroupList, db_box,addItem("Group", GroupName));
+			dbclient.putAttributes(p);
+			return "300";
+		}
+		catch(Exception e){
+			return "Something went wrong we are working on it";
+		}
+	}
+
+	public static String AddUserToGroup(String UserName, String password, String GroupName, String user)
+	{
+		try {
+			if (!checkPassword(UserName, password))
+				return "Bad Username or password";
+
+			PutAttributesRequest p ;
+			if(user != null || !user.equals(""))
+			{
+				if(checkAdmin(UserName, password, GroupName))
+					p = new PutAttributesRequest(Teams,
+						GroupName, addItem("Memeber", user));
+				else
+					return "Permission Denied. User not an admin of group";
+			}
+			else
+				p = new PutAttributesRequest(Groups,
+						GroupName, addItem("Memeber", UserName));
+			dbclient.putAttributes(p);
+
+			return "300";
+
+		}
+		catch(Exception e){
+			return "Something went wrong we are working on it";
+		}
+	}
+
+	public static String AddAdmintoGroup(String UserName, String password, String GroupName, String user)
+	{
+		try {
+			if (!checkPassword(UserName, password))
+				return "Bad Username or password";
+			
+			if(checkAdmin(UserName, password, GroupName)){
+				DeleteAttributesRequest d = new DeleteAttributesRequest(Teams, GroupName, addAttr("Member", user));
+				dbclient.deleteAttributes(d);
+				PutAttributesRequest p = new PutAttributesRequest(Teams,
+					GroupName, addItem("Admin", user));
+				dbclient.putAttributes(p);
+				return "300";
+			}
+			else
+				return "Permission Denied. User not an admin of group";
+		}
+		catch(Exception e){
+			return "Something went wrong we are working on it";
+		}
+	}
+
+	public static String RemoveUserFromGroup(String UserName, String password, String GroupName, boolean isPrivate)
+	{
+		try {
+			if (!checkPassword(UserName, password))
+				return "Bad Username or password";
+			String db_box;
+			if(isPrivate)
+				db_box = Teams;
+			else
+				db_box = Groups;
+			
+			DeleteAttributesRequest d = new DeleteAttributesRequest(db_box, GroupName, addAttr("Member", UserName));
+			dbclient.deleteAttributes(d);
+			return "300";
+		}
+		catch(Exception e){
+			return "Something went wrong we are working on it";
+		}
+	}
+
+	public static String GetListOfGroupMembers(String UserName, String password, 
+			String GroupName, boolean isTeam)
+	{
+		try {
+			if (!checkPassword(UserName, password))
+				return "Bad Username or password";
+			GetAttributesRequest g;
+			if(isTeam)
+				 g = new GetAttributesRequest(Teams, GroupName);
+			else
+				g = new GetAttributesRequest(Groups, GroupName);
+			GetAttributesResult r = dbclient.getAttributes(g);
+			
+			String r_string = "";
+			for (Attribute a : r.getAttributes()) {
+				r_string += StringEscapeUtils.escapeHtml(a.getValue()) + "/";
+			}
+			return r_string;
+		}
+		catch(Exception e){
+			return "Something went wrong we are working on it";
+		}
+	}
+	
+	public static String GetListOfGroups(String UserName, String password, boolean isTeam)
+	{
+		try {
+			if (!checkPassword(UserName, password))
+				return "Bad Username or password";
+			GetAttributesRequest g;
+			if(isTeam)
+				 g = new GetAttributesRequest(GroupList, Teams);
+			else
+				g = new GetAttributesRequest(GroupList, Groups);
+			GetAttributesResult r = dbclient.getAttributes(g);
+			
+			String r_string = "";
+			for (Attribute a : r.getAttributes()) {
+				r_string += StringEscapeUtils.escapeHtml(a.getValue()) + "/";
+			}
+			return r_string;
+		}
+		catch(Exception e){
+			return "Something went wrong we are working on it";
+		}
 	}
 }
