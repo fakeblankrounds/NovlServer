@@ -5,9 +5,10 @@ import java.net.ServerSocket;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import com.fbrs.server.matchmaking.MatchingServer;
 import com.fbrs.server.novl.staticweb.Help;
-import com.fbrs.server.rebound.MatchThread;
 import com.fbrs.server.utils.AdminConsole;
+import com.fbrs.server.utils.ServerCommands;
 
 public class ServerEntry {
 
@@ -44,8 +45,12 @@ public class ServerEntry {
 			}
 
 		}
+		//setup static pages
 		Commands.Populate();
 		Help.PackHelp();
+		
+		//set up serer utils
+		(new Thread(new ServerCommands())).start();
 		
 		try {
 			serverSocket = new ServerSocket(port);
@@ -55,9 +60,9 @@ public class ServerEntry {
 			System.out.println("Could not listen on port " + port);
 			System.exit(-1);
 		}
-		(new Thread(new MatchThread())).start();
+		new Thread(new MatchingServer()).start();
 
-		ExecutorService pool = Executors.newFixedThreadPool(10);
+		ExecutorService pool = Executors.newFixedThreadPool(20);
 
 
 
@@ -67,7 +72,7 @@ public class ServerEntry {
 			pool.execute(new ClientThread(serverSocket.accept()));
 			System.out.println("Connect");
 		}
-
+		System.out.println("Shutting down");
 		serverSocket.close();
 	}
 

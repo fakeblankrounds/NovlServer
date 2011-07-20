@@ -120,7 +120,7 @@ public class Groups  implements ICommand{
 			for(int i = 0; i < iter; i++)
 				request[i] = temp[i];
 			try{
-				return commands.get(request[2]).go(request[3], request[4], request[5]);
+				return commands.get(request[2]).go(request[3], request[4], request[5], request[6]);
 			}
 			catch (Exception e){
 				return "Bad Query";
