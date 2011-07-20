@@ -62,7 +62,7 @@ public class ServerEntry {
 		}
 		new Thread(new MatchingServer()).start();
 
-		ExecutorService pool = Executors.newFixedThreadPool(20);
+		ExecutorService pool = Executors.newFixedThreadPool(5);
 
 
 

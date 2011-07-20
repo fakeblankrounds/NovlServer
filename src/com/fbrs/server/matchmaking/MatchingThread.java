@@ -66,25 +66,27 @@ public class MatchingThread implements Runnable{
 			e.printStackTrace();
 		}
 		System.out.println("Starting Game");
+		String s = null;
 		while(!endGame)
 		{
 			try{
 				if(in.ready()){	
-					out2.println(in.readLine());
+					s = InputProcessing.Process(in.readLine());
+					if(s != null)
+					out2.println("#" + s);
+					out2.flush();
 				}
 				if(in2.ready()){
-					out.println(in2.readLine());
+					s = InputProcessing.Process(in2.readLine());
+					if(s != null)
+					out.println("#" + s);
+					out.flush();
 				}
 			}
 			catch (Exception e){
 				e.printStackTrace();
 				endGame = true;
 				sendReconnect(out,out2);
-			}
-
-			if(clientSocket.socket.isClosed() || clientSocket.secondSocket.isClosed() || !checkConnection(out, in) || !checkConnection(out2, in2)){
-				sendReconnect(out, out2);
-				endGame = true;
 			}
 		}
 		try {
@@ -111,42 +113,24 @@ public class MatchingThread implements Runnable{
 		String one = "";
 		String two = "";
 		long starttime = System.currentTimeMillis();
-		while((!one.equals("300") && !two.equals("300")))
+		while(!one.equals("C300") && !two.equals("C300"))
 		{
-			out.println("300");
-			out2.println("300");
+			out.println("S300");
+			out2.println("S300");
 			Thread.sleep(100);
-			if(in.ready() && !one.equals("300"))
+			if(in.ready() && (!one.equals("C300"))){
 				one = in.readLine();
-			if(in2.ready() && !two.equals("300"))
+			}
+			if(in2.ready() && (!two.equals("C300"))){
 				two = in.readLine();
+			}
 			if((System.currentTimeMillis() - starttime) > 60000)
 			{
 				sendReconnect(out,out2);
 			}
-
 		}
+		System.out.println("Sync Complete");
 		return;
-	}
-
-	//checks to see if a connection is already bad.
-	public boolean checkConnection(PrintWriter out, BufferedReader in){
-		try{
-			while(true){
-				out.println("@");
-				if(in.ready()){
-					if(in.readLine().equals("@"))
-						return true;
-					else
-						return false;
-				}
-				Thread.sleep(10);
-			}
-		}
-		catch (Exception e)
-		{
-			return false;
-		}
 	}
 
 	public void sendReconnect(PrintWriter out, PrintWriter out2)
@@ -163,6 +147,7 @@ public class MatchingThread implements Runnable{
 		}
 		catch (Exception e){
 		}
+		System.out.println("SentReconnect");
 		return;
 	}
 }
