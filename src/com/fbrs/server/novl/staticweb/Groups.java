@@ -25,7 +25,7 @@ public class Groups  implements ICommand{
 
 			@Override
 			public String getCommands(String s) {
-				return "#, Username, Password, Friend";
+				return "#, UserName, password, GroupName, isPrivate(t/f)";
 			}
 
 		});
@@ -38,7 +38,7 @@ public class Groups  implements ICommand{
 
 			@Override
 			public String getCommands(String s) {
-				return "#, Username, Password";
+				return "#, UserName, password, GroupName, user";
 			}
 
 		});
@@ -52,7 +52,7 @@ public class Groups  implements ICommand{
 
 			@Override
 			public String getCommands(String s) {
-				return "#, Username, Password";
+				return "#, UserName, password, GroupName, user";
 			}
 
 		});
@@ -66,7 +66,7 @@ public class Groups  implements ICommand{
 
 			@Override
 			public String getCommands(String s) {
-				return "#, Username, Password";
+				return "#, UserName, password, GroupName, isTeam (t/f)";
 			}
 
 		});
@@ -80,7 +80,7 @@ public class Groups  implements ICommand{
 
 			@Override
 			public String getCommands(String s) {
-				return "#, Username, Password";
+				return "#, UserName, password, isTeam (t/f)";
 			}
 
 		});
@@ -94,7 +94,7 @@ public class Groups  implements ICommand{
 
 			@Override
 			public String getCommands(String s) {
-				return "#, Username, Password";
+				return "#, UserName, password, GroupName, isTeam (t/f)";
 			}
 
 		});

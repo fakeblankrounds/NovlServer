@@ -20,25 +20,23 @@ public class MatchingService implements Runnable{
 		{
 			int size = Players.size();
 			try{
-			
-			if(Players.size() % 2 != 0)
-				size--;	
-			if(size > 0)
-				System.out.println("Matching"+ size +"Players");
-			for(int i = 0; i < size; i+=2)
-			{
-				Players.get(i).AddSocket(Players.get(i+1).socket);
-				Players.get(i).t.sendCommand(ThreadCommand.stay);
-				Players.get(i+1).t.sendCommand(ThreadCommand.die);
-				Players.remove(i);
-				Players.remove(i+1);
-			}
+
+				if(Players.size() > 1)
+					System.out.println("Matching "+ Players.size() +" Players");
+				for(int i = 0; (i + 1) < Players.size(); i+=2)
+				{
+					Players.get(i).AddSocket(Players.get(i+1).socket);
+					Players.get(i).t.sendCommand(ThreadCommand.stay);
+					Players.get(i+1).t.sendCommand(ThreadCommand.die);
+					Players.remove(i);
+					Players.remove(i);
+				}
 			}
 			catch(Exception e)
 			{
 				e.printStackTrace();
 				System.out.println(size);
-		}	
+			}	
 		}
 	}
 

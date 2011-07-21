@@ -63,6 +63,21 @@ public class UnitTests implements ICommand{
 				}
 
 			});
+			
+			commands.put("Groups", new ICommand(){
+
+				@Override
+				public String go(String... request) {
+					return TestGroups();
+				}
+
+				@Override
+				public String getCommands(String s) {
+					return "#";
+				}
+
+			});
+			
 			commands.put("End", new ICommand(){
 
 				@Override
@@ -241,6 +256,8 @@ public class UnitTests implements ICommand{
 	
 	public String TestGroups()
 	{
-		return "";
+		String r_value = "";
+		ICommand c = Commands.Command.get("Groups");
+		return r_value;
 	}
 }

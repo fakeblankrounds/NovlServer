@@ -22,6 +22,10 @@ public class MatchingThread implements Runnable{
 	private PrintWriter out = null;
 	private BufferedReader in2 = null;
 	private PrintWriter out2 = null;
+	
+	private long last_recive1;
+	private long last_recive2;
+
 
 	public MatchingThread(ThreadSocketPair socket)
 	{
@@ -67,6 +71,8 @@ public class MatchingThread implements Runnable{
 		}
 		System.out.println("Starting Game");
 		String s = null;
+		
+		boolean inWarning = false;
 		while(!endGame)
 		{
 			try{
@@ -75,13 +81,26 @@ public class MatchingThread implements Runnable{
 					if(s != null)
 					out2.println("#" + s);
 					out2.flush();
+					last_recive1 = System.currentTimeMillis();
 				}
 				if(in2.ready()){
 					s = InputProcessing.Process(in2.readLine());
 					if(s != null)
 					out.println("#" + s);
 					out.flush();
+					last_recive2 = System.currentTimeMillis();
 				}
+				
+				if(((System.currentTimeMillis() - last_recive1 > 30000) || (System.currentTimeMillis() - last_recive1 > 30000)) && !inWarning)
+				{
+					if(((System.currentTimeMillis() - last_recive1 > 30000) || (System.currentTimeMillis() - last_recive1 > 30000)))
+						sendReconnect(out,out2);
+					else
+						sendWarning(out, out2);
+				}
+				else if(inWarning)
+					Sync();
+				
 			}
 			catch (Exception e){
 				e.printStackTrace();
@@ -129,7 +148,9 @@ public class MatchingThread implements Runnable{
 				sendReconnect(out,out2);
 			}
 		}
-		System.out.println("Sync Complete");
+		//System.out.println("Sync Complete");
+		last_recive1 = System.currentTimeMillis();
+		last_recive2 = System.currentTimeMillis();
 		return;
 	}
 
@@ -137,17 +158,39 @@ public class MatchingThread implements Runnable{
 	{
 		try{
 			out.println("888");
+			out.flush();
 			clientSocket.socket.close();
 		}
 		catch (Exception e){
 		}
 		try{
 			out2.println("888");
+			out.flush();
 			clientSocket.secondSocket.close();
 		}
 		catch (Exception e){
 		}
 		System.out.println("SentReconnect");
+		endGame = true;
+		return;
+	}
+	
+	public void sendWarning(PrintWriter out, PrintWriter out2)
+	{
+		try{
+			out.println("555");
+			out.flush();
+		}
+		catch (Exception e){
+		}
+		try{
+			out2.println("555");
+			out.flush();
+		}
+		catch (Exception e){
+			sendReconnect(out,out2);
+		}
+		System.out.println("SentWarning");
 		return;
 	}
 }
