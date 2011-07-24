@@ -17,6 +17,9 @@ public static final String AWSAccessKey = "AKIAI7IPRLC6XBKU6ATA";
 		private static final String Users = "Novl_UserStore";
 		private static final String Friends = "Novl_FriendStore";
 		private static final String Messages = "Novl_MsgStore";
+		private static final String Groups = "Novl_GroupStore";
+		private static final String Teams = "Novl_TeamStore";
+		private static final String GroupList = "Novl_ListGroup";
 		//private SecretKey novlkey = new SecretKey("");
 		//private EncryptionMaterials encryption = new EncryptionMaterials(novlkey);
 		
@@ -33,12 +36,12 @@ public static final String AWSAccessKey = "AKIAI7IPRLC6XBKU6ATA";
 	
 	public static void reset()
 	{
-		DeleteDomainRequest del = new DeleteDomainRequest(Users);
-		DeleteDomainRequest del1 = new DeleteDomainRequest(Messages);
-		DeleteDomainRequest del2 = new DeleteDomainRequest(Friends);
-		CreateDomainRequest createDomainRequest = new CreateDomainRequest(Messages);
-		CreateDomainRequest createDomainRequest1 = new CreateDomainRequest(Users);
-		CreateDomainRequest createDomainRequest2 = new CreateDomainRequest(Friends);
+		DeleteDomainRequest del = new DeleteDomainRequest(Groups);
+		DeleteDomainRequest del1 = new DeleteDomainRequest(Teams);
+		DeleteDomainRequest del2 = new DeleteDomainRequest(GroupList);
+		CreateDomainRequest createDomainRequest = new CreateDomainRequest(Groups);
+		CreateDomainRequest createDomainRequest1 = new CreateDomainRequest(Teams);
+		CreateDomainRequest createDomainRequest2 = new CreateDomainRequest(GroupList);
 		dbclient.deleteDomain(del);
 		dbclient.deleteDomain(del1);
 		dbclient.deleteDomain(del2);

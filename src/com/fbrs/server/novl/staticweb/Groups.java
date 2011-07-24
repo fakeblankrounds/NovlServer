@@ -29,6 +29,21 @@ public class Groups  implements ICommand{
 			}
 
 		});
+		
+		commands.put("removeGroup", new ICommand(){
+
+			@Override
+			public String go(String... request) {
+				return RemoveGroup(request[0], request[1], request[2], request[3]);
+			}
+
+			@Override
+			public String getCommands(String s) {
+				return "#, UserName, password, GroupName, isPrivate(t/f)";
+			}
+
+		});
+		
 		commands.put("addUsertoTeam", new ICommand(){
 
 			@Override
@@ -47,7 +62,7 @@ public class Groups  implements ICommand{
 
 			@Override
 			public String go(String... request) {
-				return AddAdmin(request[0], request[1], request[2], request[3]);
+				return AddAdmin(request[0], request[1], request[2], request[3], request[3]);
 			}
 
 			@Override
@@ -110,7 +125,7 @@ public class Groups  implements ICommand{
 		}
 		s[0] = StringEscapeUtils.escapeHtml(s[0]);
 		try{
-			String[] request = new String[6];
+			String[] request = new String[7];
 			String[] temp = s[0].split("/");
 			int iter;
 			if(request.length < temp.length)
@@ -123,6 +138,7 @@ public class Groups  implements ICommand{
 				return commands.get(request[2]).go(request[3], request[4], request[5], request[6]);
 			}
 			catch (Exception e){
+				e.printStackTrace();
 				return "Bad Query";
 			}
 		}
@@ -131,11 +147,6 @@ public class Groups  implements ICommand{
 		}
 	}
 
-	
-	
-	
-	
-	
 	//CreateNewGroup(String UserName, String password, String GroupName, boolean isPrivate)
 	public String AddGroup(String UserName, String password, String GroupName, String p)
 	{
@@ -148,6 +159,18 @@ public class Groups  implements ICommand{
 		return NovlDataStore.CreateNewGroup(UserName, password, GroupName, isPrivate);
 	}
 	
+	//RemoveGroup(String UserName, String password, String GroupName, boolean isPrivate)
+	public String RemoveGroup(String UserName, String password, String GroupName, String p)
+	{
+		boolean isPrivate;
+		if(p.equals("t"))
+			isPrivate = true;
+		else
+			isPrivate = false;
+		
+		return NovlDataStore.RemoveGroup(UserName, password , GroupName, isPrivate);
+	}
+	
 	//AddUserToGroup(String UserName, String password, String GroupName, String user)
 	public String AddUsertoTeam(String UserName, String password, String GroupName, String user)
 	{
@@ -155,9 +178,14 @@ public class Groups  implements ICommand{
 	}
 	
 	//AddAdmintoGroup(String UserName, String password, String GroupName, String user)
-	public String AddAdmin(String UserName, String password, String GroupName, String user)
+	public String AddAdmin(String UserName, String password, String GroupName, String user, String p)
 	{
-		return NovlDataStore.AddAdmintoGroup(UserName, password, GroupName, user);
+		boolean isPrivate;
+		if(p.equals("t"))
+			isPrivate = true;
+		else
+			isPrivate = false;
+		return NovlDataStore.AddAdmintoGroup(UserName, password, GroupName, user, isPrivate);
 	}
 	
 	//RemoveUserFromGroup(String UserName, String password, String GroupName)
@@ -197,7 +225,7 @@ public class Groups  implements ICommand{
 	@Override
 	public String getCommands(String s) {
 		if(s.equals("root"))
-			return "addGroup,addUsertoTeam,addAdmin,removeUserFromGroup,getGroups,getMembers";
+			return "addGroup,removeGroup,addUsertoTeam,addAdmin,removeUserFromGroup,getGroups,getMembers";
 		else
 			return commands.get(s).getCommands("");
 	}

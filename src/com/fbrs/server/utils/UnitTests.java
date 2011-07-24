@@ -19,7 +19,16 @@ public class UnitTests implements ICommand{
 	private static final String u2pass= "#(@#$8kjl13409u(*JH@#$32j4hHJ#()@KL432hj*#@$KJH@#$0#$JH@#$89";
 	private static final String msgHeader1 = "USERUNITTESTMESSAGE";
 	private static final String msgSubject1 = "MSGSUBJECT1USERMESSAGESUBJECT";
-
+	private static final String group = "FBRS_SYSTEM_TEST_GROUP";
+	private static final String team = "FBRS_SYSTEM_TEST_TEAM";
+	
+	//HTML
+	private static String passed = "<div style=\"border-style:dotted; border-width:2px;  background-color:lightgreen;\">Passed</div> \n";
+	private static String test_stat = "<div style=\"border-style:dotted; border-width:2px; background-color:lightblue;\">";
+	private static String _test_stat = "</div> \n";
+	private static String failed = "<div style=\"border-style:dotted; border-width:2px; background-color:pink;\">Failed</div> \n";
+	private static String info = "<div style=\"border-style:solid; border-width:2px; background-color:lightyellow;\">";
+	private static String _info = "</div> \n";
 	public UnitTests()
 	{
 		if(ServerEntry.unittest){
@@ -63,7 +72,7 @@ public class UnitTests implements ICommand{
 				}
 
 			});
-			
+
 			commands.put("Groups", new ICommand(){
 
 				@Override
@@ -77,7 +86,7 @@ public class UnitTests implements ICommand{
 				}
 
 			});
-			
+
 			commands.put("End", new ICommand(){
 
 				@Override
@@ -135,7 +144,7 @@ public class UnitTests implements ICommand{
 	public String getCommands(String s) {
 		if(ServerEntry.unittest){
 			if(s.equals("root"))
-				return "All,Friends,Users,End";
+				return "All,Friends,Users,Groups,End";
 			else
 				return commands.get(s).getCommands("");
 		}
@@ -150,16 +159,16 @@ public class UnitTests implements ICommand{
 		r_value += TestUsers(); 
 		r_value += test_stat + "Starting Friend Test:\n" + _test_stat;
 		r_value += TestFriends();
+		r_value +=test_stat + "Testing Groups" + _test_stat;
+		r_value += TestGroups();
 		r_value +=test_stat +  "Finishing Users Test:\n" +_test_stat;
 		r_value += FinishTestUsers();
+		
 		r_value += "Testing Done! </body> </html>";
 		return r_value;
 	}
 
-	private static String passed = "<div style=\"border-style:dotted; border-width:2px; background-color:green;\">Passed</div> \n";
-	private static String test_stat = "<div style=\"border-style:dotted; border-width:2px; background-color:lightblue;\">";
-	private static String _test_stat = "</div> \n";
-	private static String failed = "<div style=\"border-style:dotted; border-width:2px; background-color:red;\">Failed</div> \n";
+	
 	public String TestFriends()
 	{
 		ICommand c = Commands.Command.get("Friends");
@@ -253,11 +262,65 @@ public class UnitTests implements ICommand{
 			r_value+=failed;
 		return r_value;
 	}
-	
+
 	public String TestGroups()
 	{
 		String r_value = "";
 		ICommand c = Commands.Command.get("Groups");
+		r_value += RunTest("Groups", "//addGroup/" + user1 + "/" + u1pass + "/" + group + "/f/", "GroupTest1: Createing " + group + " for " + user1);
+		r_value += RunTest("Groups", "//addGroup/" + user1 + "/" + u1pass + "/" + group + "/f/", "GroupTest2: Createing Duplicate" + group + " for " + user1);
+		r_value += RunTest("Groups", "//addGroup/" + user1 + "/" + u1pass + "/" + team + "/t/", "GroupTest3: Createing " + team + " for " + user1);
+		r_value += RunTest("Groups", "//addGroup/" + user1 + "/" + u1pass + "/" + team + "/t/", "GroupTest4: Createing Duplicate" + team + " for " + user1);
+		r_value += RunVisual("Groups", "//getGroups/" + user1 + "/" + u1pass + "/f/", "GroupTest5: Getting Groups" );
+		r_value += RunVisual("Groups", "//getGroups/" + user1 + "/" + u1pass + "/t/", "GroupTest6: Getting Teams" );
+		r_value += RunVisual("Groups", "//getMembers/" + user1 + "/" + u1pass + "/" + group + "/f/", "GroupTest7: Getting group members" );
+		r_value += RunVisual("Groups", "//getMembers/" + user1 + "/" + u1pass + "/" + team + "/t/", "GroupTest8: Getting Team members" );
+		r_value += RunTest("Groups", "//addUsertoTeam/" + user1 + "/" + u1pass + "/" + team + "/" + user2 + "/", "GroupTest9: adding user to :" + team + " for " + user2);
+		r_value += RunVisual("Groups", "//getMembers/" + user1 + "/" + u1pass + "/" + team + "/t/", "GroupTest8: Getting group members" );
+		r_value += RunTest("Groups", "//addAdmin/" + user1 + "/" + u1pass + "/" + team + "/" + user2 + "/t/", "GroupTest10: adding Admin to :" + team + " for " + user2);
+		r_value += RunVisual("Groups", "//getMembers/" + user1 + "/" + u1pass + "/" + team + "/t/", "GroupTest8: Getting group members" );
+		r_value += RunTest("Groups", "//removeUserFromGroup/" + user1 + "/" + u1pass + "/" + team + "/t/", "GroupTest11: removeing :" + user1 + " from " + team);
+		r_value += RunTest("Groups", "//removeUserFromGroup/" + user2 + "/" + u2pass + "/" + team + "/t/", "GroupTest12: removeing :" + user2 + " from " + team);
+		r_value += RunTest("Groups", "//removeGroup/" + user1 + "/" + u1pass + "/" + team + "/t/", "GroupTest13: removing  " + team + " for " + user2);
+		r_value += RunTest("Groups", "//removeGroup/" + user1 + "/" + u1pass + "/" + group + "/f/", "GroupTest13: removing  " + group + " for " + user1);
+		return r_value;
+	}
+	
+	public String RunTest(String command, String url, String description)
+	{
+		String r_value = "";
+		String testresult;
+		ICommand c = Commands.Command.get(command);
+		r_value += test_stat + description + _test_stat;
+		testresult = c.go(url);
+		if(testresult.equals("300"))
+			r_value+=passed;
+		else
+			r_value+=failed + testresult + "Call: " + url;
+		
+		try {
+			Thread.sleep(100);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return r_value;
+	}
+	
+	public String RunVisual(String command, String url, String description)
+	{
+		String r_value = "";
+		String testresult;
+		ICommand c = Commands.Command.get(command);
+		r_value += test_stat + description + _test_stat;
+		testresult = c.go(url);
+		r_value+= info + testresult + _info;
+		try {
+			Thread.sleep(100);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		return r_value;
 	}
 }
