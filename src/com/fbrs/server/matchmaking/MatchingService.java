@@ -11,6 +11,8 @@ public class MatchingService implements Runnable{
 	public static ArrayList<ThreadSocketPair> Players = new ArrayList<ThreadSocketPair>();
 
 	public static boolean listening = true;
+	
+	public static int gamenumber = 0;
 
 	public synchronized static void ArrayControl(ThreadSocketPair s, boolean runMatching)
 	{
@@ -25,9 +27,10 @@ public class MatchingService implements Runnable{
 					System.out.println("Matching "+ Players.size() +" Players");
 				for(int i = 0; (i + 1) < Players.size(); i+=2)
 				{
-					Players.get(i).AddSocket(Players.get(i+1).socket);
-					Players.get(i).t.sendCommand(ThreadCommand.stay);
-					Players.get(i+1).t.sendCommand(ThreadCommand.die);
+					Players.get(i).AddSocket(Players.get(i+1).socket,"");
+					Players.get(i).t.sendCommand(ThreadCommand.stay,0);
+					Players.get(i+1).t.sendCommand(ThreadCommand.die, gamenumber);
+					gamenumber++;
 					Players.remove(i);
 					Players.remove(i);
 				}

@@ -25,6 +25,8 @@ public class MatchingThread implements Runnable{
 	
 	private long last_recive1;
 	private long last_recive2;
+	
+	private int gamenumber;
 
 
 	public MatchingThread(ThreadSocketPair socket)
@@ -49,28 +51,25 @@ public class MatchingThread implements Runnable{
 			return;
 		
 		try{
-			in = new BufferedReader(
-					new InputStreamReader(
-							clientSocket.socket.getInputStream()));
-			out = new PrintWriter(
-					clientSocket.socket.getOutputStream(), true);
+			in = new BufferedReader( new InputStreamReader(	clientSocket.socket.getInputStream()));
+			out = new PrintWriter( clientSocket.socket.getOutputStream(), true);
 
-			in2 = new BufferedReader(
-					new InputStreamReader(
-							clientSocket.secondSocket.getInputStream()));
-			out2 = new PrintWriter(
-					clientSocket.secondSocket.getOutputStream(), true);
+			in2 = new BufferedReader( new InputStreamReader( clientSocket.secondSocket.getInputStream()));
+			out2 = new PrintWriter(	clientSocket.secondSocket.getOutputStream(), true);
 
 			//Sync up the clients and see if we have a connection to both
 			Sync();
-			
+			System.out.println(gamenumber + "Sync Done");
 		}
 		catch (Exception e){
 			sendReconnect(out, out2);
 			e.printStackTrace();
+			return;
 		}
-		System.out.println("Starting Game");
+		System.out.println(gamenumber + "Starting Game");
 		String s = null;
+		
+		out.println("p1");
 		
 		boolean inWarning = false;
 		while(!endGame)
@@ -91,10 +90,13 @@ public class MatchingThread implements Runnable{
 					last_recive2 = System.currentTimeMillis();
 				}
 				
-				if(((System.currentTimeMillis() - last_recive1 > 30000) || (System.currentTimeMillis() - last_recive1 > 30000)) && !inWarning)
+				if(((System.currentTimeMillis() - last_recive1 > 20000) || (System.currentTimeMillis() - last_recive1 > 20000)) && !inWarning)
 				{
 					if(((System.currentTimeMillis() - last_recive1 > 30000) || (System.currentTimeMillis() - last_recive1 > 30000)))
-						sendReconnect(out,out2);
+					{
+						endGame=true;
+						sendReconnect(out,out2);		
+					}
 					else
 						sendWarning(out, out2);
 				}
@@ -111,7 +113,7 @@ public class MatchingThread implements Runnable{
 		try {
 			clientSocket.secondSocket.close();
 			clientSocket.socket.close();
-			System.out.println("EndingGame");
+			System.out.println(gamenumber + "EndingGame");
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -119,12 +121,13 @@ public class MatchingThread implements Runnable{
 
 	}
 
-	public void sendCommand(ThreadCommand t)
+	public void sendCommand(ThreadCommand t, int gamenumber)
 	{
 		synchronized (lock){
 		command = t;
 		lock.notify();
 		}
+		this.gamenumber = gamenumber;
 	}
 	
 	public void Sync() throws InterruptedException, IOException
@@ -143,10 +146,14 @@ public class MatchingThread implements Runnable{
 			if(in2.ready() && (!two.equals("C300"))){
 				two = in.readLine();
 			}
-			if((System.currentTimeMillis() - starttime) > 60000)
+			if((System.currentTimeMillis() - starttime) > 10000)
 			{
 				sendReconnect(out,out2);
+				endGame=true;
+				return;
 			}
+			
+			//System.out.println(System.currentTimeMillis() - starttime);
 		}
 		//System.out.println("Sync Complete");
 		last_recive1 = System.currentTimeMillis();
@@ -170,8 +177,9 @@ public class MatchingThread implements Runnable{
 		}
 		catch (Exception e){
 		}
-		System.out.println("SentReconnect");
+		System.out.println(gamenumber + "SentReconnect");
 		endGame = true;
+	
 		return;
 	}
 	
@@ -190,7 +198,7 @@ public class MatchingThread implements Runnable{
 		catch (Exception e){
 			sendReconnect(out,out2);
 		}
-		System.out.println("SentWarning");
+		System.out.println(gamenumber + "SentWarning");
 		return;
 	}
 }
