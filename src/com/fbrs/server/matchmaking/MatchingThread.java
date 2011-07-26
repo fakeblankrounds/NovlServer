@@ -4,7 +4,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.net.Socket;
 
 public class MatchingThread implements Runnable{
 
@@ -90,18 +89,18 @@ public class MatchingThread implements Runnable{
 					last_recive2 = System.currentTimeMillis();
 				}
 				
-				if(((System.currentTimeMillis() - last_recive1 > 20000) || (System.currentTimeMillis() - last_recive1 > 20000)) && !inWarning)
+				if(((System.currentTimeMillis() - last_recive1 > 20000) || (System.currentTimeMillis() - last_recive2 > 20000)))
 				{
-					if(((System.currentTimeMillis() - last_recive1 > 30000) || (System.currentTimeMillis() - last_recive1 > 30000)))
+					if(((System.currentTimeMillis() - last_recive1 > 30000) || (System.currentTimeMillis() - last_recive2 > 30000)))
 					{
 						endGame=true;
 						sendReconnect(out,out2);		
 					}
-					else
+					else if(!inWarning){
 						sendWarning(out, out2);
+						inWarning = true;
+					}
 				}
-				else if(inWarning)
-					Sync();
 				
 			}
 			catch (Exception e){

@@ -266,7 +266,7 @@ public class UnitTests implements ICommand{
 	public String TestGroups()
 	{
 		String r_value = "";
-		ICommand c = Commands.Command.get("Groups");
+		//ICommand c = Commands.Command.get("Groups");
 		r_value += RunTest("Groups", "//addGroup/" + user1 + "/" + u1pass + "/" + group + "/f/", "GroupTest1: Createing " + group + " for " + user1);
 		r_value += RunTest("Groups", "//addGroup/" + user1 + "/" + u1pass + "/" + group + "/f/", "GroupTest2: Createing Duplicate" + group + " for " + user1);
 		r_value += RunTest("Groups", "//addGroup/" + user1 + "/" + u1pass + "/" + team + "/t/", "GroupTest3: Createing " + team + " for " + user1);

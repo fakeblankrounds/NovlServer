@@ -372,8 +372,10 @@ public class NovlDataStore {
 				return "Bad Username or password";
 
 			PutAttributesRequest p ;
-			if(user != null || !user.equals(""))
+			if(user != null)
 			{
+				if(user.equals(""))
+					return "Bad Username";
 				if(checkAdmin(UserName, password, GroupName, true))
 					p = new PutAttributesRequest(Teams,
 							GroupName, addItem("Memeber", user));

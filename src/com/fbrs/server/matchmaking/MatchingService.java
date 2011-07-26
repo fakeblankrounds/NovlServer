@@ -1,8 +1,6 @@
 package com.fbrs.server.matchmaking;
 
-import java.net.Socket;
 import java.util.ArrayList;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import com.fbrs.server.matchmaking.MatchingThread.ThreadCommand;
 

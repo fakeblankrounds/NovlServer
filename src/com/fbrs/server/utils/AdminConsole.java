@@ -14,9 +14,9 @@ public static final String AWSAccessKey = "AKIAI7IPRLC6XBKU6ATA";
 		public  static final AWSCredentials credentials = new BasicAWSCredentials(AWSAccessKey, AWSSecretKey);
 		
 	
-		private static final String Users = "Novl_UserStore";
-		private static final String Friends = "Novl_FriendStore";
-		private static final String Messages = "Novl_MsgStore";
+		//private static final String Users = "Novl_UserStore";
+		//private static final String Friends = "Novl_FriendStore";
+		//private static final String Messages = "Novl_MsgStore";
 		private static final String Groups = "Novl_GroupStore";
 		private static final String Teams = "Novl_TeamStore";
 		private static final String GroupList = "Novl_ListGroup";
