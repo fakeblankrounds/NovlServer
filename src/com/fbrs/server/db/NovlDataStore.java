@@ -48,8 +48,6 @@ public class NovlDataStore {
 		List<ReplaceableAttribute> AttrList;
 		AttrList = new ArrayList<ReplaceableAttribute>();
 		AttrList.add(new ReplaceableAttribute("password", password, false));
-		AttrList.add(new ReplaceableAttribute("status", "busy", true));
-		AttrList.add(new ReplaceableAttribute("online", "offline", true));
 
 		return AttrList;
 	}
@@ -67,7 +65,7 @@ public class NovlDataStore {
 		return AttrList;
 	}
 
-	private static boolean checkPassword(String UserName, String password) {
+	public static boolean checkPassword(String UserName, String password) {
 		GetAttributesRequest request = new GetAttributesRequest(Users, UserName)
 		.withAttributeNames("password");
 		GetAttributesResult r = dbclient.getAttributes(request);
@@ -127,12 +125,6 @@ public class NovlDataStore {
 		} catch (Exception e) {
 			return "";
 		}
-	}
-
-	@SuppressWarnings("unused")
-	private static String setStatus(String UserName, String password)
-	{
-		return "";
 	}
 
 	public static String CreateNewUser(String UserName, String password) {

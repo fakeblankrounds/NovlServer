@@ -8,6 +8,7 @@ import org.apache.commons.lang.StringEscapeUtils;
 
 import com.fbrs.server.ServerEntry;
 import com.fbrs.server.db.NovlDataStore;
+import com.fbrs.server.db.UserStatus;
 import com.fbrs.server.utils.ICommand;
 
 public class UserData implements ICommand{
@@ -17,7 +18,7 @@ public class UserData implements ICommand{
 	public UserData()
 	{
 		commands = new HashMap<String, ICommand> ();
-		commands.put("message", new ICommand(){
+		commands.put("sendMessage", new ICommand(){
 
 			@Override
 			public String go(String... request) {
@@ -30,7 +31,7 @@ public class UserData implements ICommand{
 			}
 
 		});
-		commands.put("getmessages", new ICommand(){
+		commands.put("getMessages", new ICommand(){
 
 			@Override
 			public String go(String... request) {
@@ -44,7 +45,7 @@ public class UserData implements ICommand{
 
 		});
 		
-		commands.put("getsingle", new ICommand(){
+		commands.put("getSingle", new ICommand(){
 
 			@Override
 			public String go(String... request) {
@@ -82,6 +83,20 @@ public class UserData implements ICommand{
 			@Override
 			public String getCommands(String s) {
 				return "#, Username, Password";
+			}
+
+		});
+		
+		commands.put("setStatus", new ICommand(){
+
+			@Override
+			public String go(String... request) {
+				return  setStatus(request[0], request[1], request[2]);
+			}
+
+			@Override
+			public String getCommands(String s) {
+				return "#, Username, Password, Status";
 			}
 
 		});
@@ -154,12 +169,23 @@ public class UserData implements ICommand{
 		return NovlDataStore.getSingleMessage(username, pass, msgname);
 	}
 	
+	public String setStatus(String UserName, String password, String Status)
+	{
+		if(NovlDataStore.checkPassword(UserName, password)){
+			UserStatus.setStatus(UserName, Status);
+			return "300";
+		}
+		else
+			return "Bad username or password";
+			
+	}
+	
 
 	@Override
 	public String getCommands(String s) {
 
 		if(s.equals("root"))
-			return "message,getmessages,getsingle,newUser,deleteUser";
+			return "setStatus,sendMessage,getMessages,getSingle,newUser,deleteUser";
 		else
 			return commands.get(s).getCommands("");
 	}

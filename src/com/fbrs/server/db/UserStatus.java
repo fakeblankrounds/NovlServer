@@ -1,8 +1,9 @@
 package com.fbrs.server.db;
 
+import java.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class UserStatus {
+public class UserStatus extends TimerTask{
 	
 	private static ConcurrentHashMap<String, String> usermap = new ConcurrentHashMap<String, String>(100);
 	
@@ -19,5 +20,15 @@ public class UserStatus {
 	public static void setStatus(String UserName, String Status)
 	{
 		usermap.put(UserName, Status);
+	}
+	
+	public static void ClearStatus()
+	{
+		usermap.clear();
+	}
+
+	@Override
+	public void run() {
+		UserStatus.ClearStatus();
 	}
 }

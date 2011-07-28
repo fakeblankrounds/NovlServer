@@ -2,9 +2,11 @@ package com.fbrs.server;
 
 import java.io.IOException;
 import java.net.ServerSocket;
+import java.util.Timer;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import com.fbrs.server.db.UserStatus;
 import com.fbrs.server.matchmaking.MatchingServer;
 import com.fbrs.server.novl.staticweb.Help;
 import com.fbrs.server.utils.AdminConsole;
@@ -48,6 +50,11 @@ public class ServerEntry {
 		//setup static pages
 		Commands.Populate();
 		Help.PackHelp();
+		
+		//start status clock
+		Timer timer = new Timer();
+	    timer.scheduleAtFixedRate(new UserStatus(), 0L, 300000L);
+		
 		
 		//set up serer utils
 		(new Thread(new ServerCommands())).start();
