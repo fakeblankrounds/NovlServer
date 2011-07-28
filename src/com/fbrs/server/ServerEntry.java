@@ -15,7 +15,7 @@ public class ServerEntry {
 	static ServerSocket serverSocket;
 	public static boolean listening = true;
 	public static final int port = 8888;
-	public static final float version = 11.3f;
+	public static final float version = 11.4f;
 
 	public static boolean verbose = false;
 	public static boolean unittest = false;

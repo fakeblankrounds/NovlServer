@@ -121,14 +121,9 @@ public class NovlDataStore {
 
 	private static String getStatus(String UserName) {
 		try {
-			GetAttributesRequest request = new GetAttributesRequest(Users,
-					UserName).withAttributeNames("status", "online");
-			GetAttributesResult r = dbclient.getAttributes(request);
-			String r_string = UserName;
-			Attribute a = r.getAttributes().get(0);
-			Attribute b = r.getAttributes().get(1);
-			r_string += "-" + a.getValue() + "-" + b.getValue();
-			return r_string;
+			
+			return "-" + UserName + "-" + UserStatus.getStatus(UserName);
+		
 		} catch (Exception e) {
 			return "";
 		}
@@ -191,7 +186,9 @@ public class NovlDataStore {
 
 			if (!checkPassword(UserName, password))
 				return "Bad Username or password";
-
+			if(!doesUserExist(UserName))
+				return "User Doesn't Exist";
+			
 			PutAttributesRequest p = new PutAttributesRequest(Friends,
 					UserName, addItem("Friend", Friendname));
 			dbclient.putAttributes(p);
